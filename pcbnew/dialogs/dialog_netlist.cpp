@@ -40,11 +40,16 @@
 
 #include <wx_html_report_panel.h>
 #include <wx/filedlg.h>
+#include <eda_dde.h>
 
 
 void PCB_EDIT_FRAME::InstallNetlistFrame()
 {
     wxString netlistName = GetLastPath( LAST_PATH_NETLIST );
+    std::string packet = wxString::Format(
+            _( "{\"command\":\"Cmd_GetNetlist\",\"params\":\"%s\"}" ), netlistName );
+    SendCommand( MSG_TO_SCH, packet );
+    return;
 
     DIALOG_NETLIST_IMPORT dlg( this, netlistName );
 

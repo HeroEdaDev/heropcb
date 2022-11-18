@@ -52,6 +52,7 @@
 #include <tools/pcb_selection_tool.h>
 #include <netlist_reader/netlist_reader.h>
 #include <wx/log.h>
+#include "heroEDA/heroEDAcmdHandle.h"
 
 /* Execute a remote command send by Eeschema via a socket,
  * port KICAD_PCB_PORT_SERVICE_NUMBER
@@ -90,6 +91,14 @@ void PCB_EDIT_FRAME::ExecuteRemoteCommand( const char* cmdline )
     if( idcmd == nullptr )
         return;
 
+    if( strcmp( idcmd, "$HeroEDA" ) == 0 )
+    {
+        std::string cmdOp = text;
+        text = strtok( nullptr, "\"\n\r" );
+        HEROEDA::heroEDAcmdHandle heroCmd(this);
+        heroCmd.handle(cmdOp,text);
+        return;
+    }
     if( strcmp( idcmd, "$NET:" ) == 0 )
     {
         if( !crossProbingSettings.auto_highlight )

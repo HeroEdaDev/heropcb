@@ -35,6 +35,7 @@ include_directories(
     ./importers
     ${CMAKE_SOURCE_DIR}/utils/idftools
     ./specctra_import_export
+    ./heroEDA
     ${INC_AFTER}
     )
 
@@ -202,6 +203,9 @@ set( PCBNEW_IMPORT_GFX
     import_gfx/svg_import_plugin.cpp
     )
 
+set( PCBNEW_HEROEDA
+    heroEDA/heroEDAcmdHandle.cpp
+    )
 
 set( PCBNEW_EXPORTERS
     exporters/export_hyperlynx.cpp
@@ -260,6 +264,7 @@ set( PCBNEW_CLASS_SRCS
     ${PCBNEW_IMPORT_GFX}
     ${PCBNEW_NETLIST_SRCS}
     ${PCBNEW_BRDSTACKUP_MGR}
+    ${PCBNEW_HEROEDA}
 
     autorouter/rect_placement/rect_placement.cpp
     autorouter/spread_footprints.cpp
