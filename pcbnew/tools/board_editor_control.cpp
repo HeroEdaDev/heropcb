@@ -67,6 +67,8 @@
 #include <footprint_edit_frame.h>
 #include <wx/filedlg.h>
 #include <wx/log.h>
+#include <eda_dde.h>
+#include <heroEDAcmdHandle.h>
 
 using namespace std::placeholders;
 
@@ -400,6 +402,16 @@ int BOARD_EDITOR_CONTROL::BoardSetup( const TOOL_EVENT& aEvent )
 
 int BOARD_EDITOR_CONTROL::ImportNetlist( const TOOL_EVENT& aEvent )
 {
+    if( !HEROEDA::heroEDAcmdHandle::instance()->getSingleApp() )
+    {
+        wxString    fullFileName = frame()->GetBoard()->GetFileName();
+        if( fullFileName.empty() )
+            fullFileName = getEditFrame<PCB_EDIT_FRAME>()->GetLastPath( LAST_PATH_NETLIST );
+        std::string packet = wxString::Format(
+                _( "{\"command\":\"Cmd_GetNetlist\",\"params\":\"%s\"}" ), fullFileName );
+        SendCommand( MSG_TO_SCH, packet );
+        return 0;
+    }
     getEditFrame<PCB_EDIT_FRAME>()->InstallNetlistFrame();
     return 0;
 }

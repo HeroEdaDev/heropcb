@@ -8,19 +8,36 @@
 
 using namespace HEROEDA;
 using namespace std::placeholders;
-heroEDAcmdHandle::heroEDAcmdHandle( PCB_EDIT_FRAME* frame ) : m_pcbFrame(frame)
+
+heroEDAcmdHandle* heroEDAcmdHandle::m_instance = nullptr;
+heroEDAcmdHandle::heroEDAcmdHandle()
 {
 }
-
 heroEDAcmdHandle::~heroEDAcmdHandle()
-{}
+{
+    if( m_instance )
+    {
+        delete m_instance;
+        m_instance = nullptr;
+    }
+}
 
+heroEDAcmdHandle* heroEDAcmdHandle::instance()
+{
+    if( !m_instance )
+    {
+        m_instance=new heroEDAcmdHandle(); 
+    }
+    return m_instance;
+}
 void heroEDAcmdHandle::handle( std::string cmdOp, std::string cmd )
 {
     if( cmdOp.compare( "$UpdateNetlist:" ) == 0 )
         updateNetlist( cmd );
     else if( cmdOp.compare( "$GetProjectPath:" ) == 0 )
         sendProjectPath( cmd );
+    else if( cmdOp.compare( "$ClosedSCHApp:" ) == 0 )
+        setSingleApp( true );
 }
 
 void heroEDAcmdHandle::updateNetlist( std::string cmd )
@@ -37,7 +54,7 @@ void heroEDAcmdHandle::sendProjectPath( std::string cmd )
 {
     if( !m_pcbFrame )
         return;
-    auto path=m_pcbFrame->GetLastPath( LAST_PATH_NETLIST );
+    auto path = m_pcbFrame->GetBoard()->GetFileName();
     std::string packet =
             wxString::Format( _( "{\"command\":\"Cmd_GetProjectPath\",\"params\":\"%s\"}" ), path );
     SendCommand( MSG_TO_SCH, packet );

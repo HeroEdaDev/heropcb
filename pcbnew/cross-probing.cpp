@@ -95,8 +95,10 @@ void PCB_EDIT_FRAME::ExecuteRemoteCommand( const char* cmdline )
     {
         std::string cmdOp = text;
         text = strtok( nullptr, "\"\n\r" );
-        HEROEDA::heroEDAcmdHandle heroCmd(this);
-        heroCmd.handle(cmdOp,text);
+        auto heroCmd = HEROEDA::heroEDAcmdHandle::instance();
+        heroCmd->setSingleApp( false );
+        heroCmd->setPcbFrame( this );
+        heroCmd->handle( cmdOp, text );
         return;
     }
     if( strcmp( idcmd, "$NET:" ) == 0 )
